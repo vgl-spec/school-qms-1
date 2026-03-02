@@ -107,7 +107,7 @@ return (
               
               <form onSubmit={handleGetTicket} className="kiosk-form">
                 <label>Full Name:</label>
-                <input className="kiosk-input" value={studentName} onChange={(e) => setStudentName(e.target.value)} placeholder="Enter your name" required />
+                <input className="kiosk-input" value={studentName} onChange={(e) => setStudentName(e.target.value)} placeholder="Enter your name" maxLength="15" required />
                 
                 <label>Select Service:</label>
                 <select className="kiosk-input" value={selectedService} onChange={(e) => setSelectedService(e.target.value)} required>

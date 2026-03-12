@@ -8,13 +8,8 @@ import Admin from './pages/Admin';
 import Employee from './pages/EmployeeDashboard';
 import axios from 'axios';
 
-if (process.env.NODE_ENV === 'production') {
-  // vercel to render deployment
-  axios.defaults.baseURL = 'https://school-qms.onrender.com'; 
-} else {
-  // local backend
-  axios.defaults.baseURL = 'http://localhost:5001';
-}
+// Use environment variable for API URL, fallback to localhost for local dev
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
 function App() {
   return (

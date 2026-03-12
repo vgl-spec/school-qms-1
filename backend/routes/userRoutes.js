@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 const db = require('../db');
 
 // GET all users (excluding passwords for security)
@@ -12,24 +13,30 @@ router.get('/', (req, res) => {
 });
 
 // UPDATE an existing employee
-router.put('/:id', (req, res) => {
-  const { username, password, role, department } = req.body;
+router.put('/:id', async (req, res) => {
+  const { username, password, role, service_type } = req.body;
   const userId = req.params.id;
 
-  // If the admin typed a new password, update everything including the password
-  if (password && password.trim() !== '') {
-    const sql = "UPDATE users SET username = ?, password = ?, role = ?, department = ? WHERE id = ?";
-    db.query(sql, [username, password, role, department, userId], (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: "Employee updated successfully!" });
-    });
-  } else {
+  try {
+    // If the admin typed a new password, update everything including the password
+    if (password && password.trim() !== '') {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const sql = "UPDATE users SET username = ?, password = ?, role = ?, service_type = ? WHERE id = ?";
+      db.query(sql, [username, hashedPassword, role, service_type, userId], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Employee updated successfully!" });
+      });
+      return;
+    }
+
     // If password field is left blank, update everything EXCEPT the password
-    const sql = "UPDATE users SET username = ?, role = ?, department = ? WHERE id = ?";
-    db.query(sql, [username, role, department, userId], (err, result) => {
+    const sql = "UPDATE users SET username = ?, role = ?, service_type = ? WHERE id = ?";
+    db.query(sql, [username, role, service_type, userId], (err, result) => {
       if (err) return res.status(500).json({ error: err.message });
       res.json({ message: "Employee updated successfully!" });
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
